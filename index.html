@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mummy's Tiffin Counter Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f5f7;
+            --card-bg: #ffffff;
+            --text: #1c1c1e;
+            --primary: #ea580c;
+            --success: #16a34a;
+            --border: #e5e5ea;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .tracker-container {
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--card-bg);
+            border-radius: 28px;
+            padding: 30px 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            border: 1px solid var(--border);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .date-badge {
+            display: inline-block;
+            background-color: #ffedd5;
+            color: #c2410c;
+            padding: 4px 16px;
+            border-radius: 99px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        /* Large Counter Card */
+        .counter-card {
+            background: linear-gradient(135deg, #ea580c, #ff7849);
+            color: white;
+            border-radius: 24px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px rgba(234, 88, 12, 0.25);
+        }
+
+        .counter-card h2 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            opacity: 0.9;
+            font-weight: 600;
+        }
+
+        .counter-number {
+            font-size: 5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 10px 0;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .counter-unit {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        /* Menu Display */
+        .menu-box {
+            background-color: #fafaf9;
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .menu-box h3 {
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .menu-items {
+            list-style: none;
+        }
+
+        .menu-items li {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .menu-items li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Active Orders List */
+        .orders-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .active-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        .orders-list {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background-color: #fafaf9;
+        }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-row:last-child {
+            border-bottom: none;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .customer-address {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .status-badge {
+            background-color: #dcfce7;
+            color: var(--success);
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 99px;
+            white-space: nowrap;
+        }
+
+        .empty-state {
+            padding: 30px;
+            text-align: center;
+            color: #8e8e93;
+            font-size: 0.95rem;
+        }
+
+        /* Manual Increment (for testing) */
+        .admin-controls {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-plus { background-color: #dcfce7; color: var(--success); }
+        .btn-minus { background-color: #fee2e2; color: #ef4444; }
+        .btn-refresh { background-color: #f2f2f7; color: var(--text); border: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+    <div class="tracker-container">
+        <div class="header">
+            <h1>🍳 Mummy's Counter</h1>
+            <div class="date-badge" id="currentDate">Today</div>
+        </div>
+
+        <!-- Big Counter Card -->
+        <div class="counter-card">
+            <h2>Total Tiffins Today</h2>
+            <div class="counter-number" id="tiffinCount">0</div>
+            <div class="counter-unit">Tiffins to Prepare</div>
+        </div>
+
+        <!-- Today's Menu -->
+        <div class="menu-box">
+            <h3>Today's Menu (डिनर)</h3>
+            <ul class="menu-items">
+                <li>🧀 Paneer Butter Masala</li>
+                <li>🍲 Dal Tadka</li>
+                <li>🍚 Jeera Rice</li>
+                <li>🫓 4 Butter Rotis</li>
+            </ul>
+        </div>
+
+        <!-- Customer List -->
+        <div class="orders-section">
+            <h3>
+                <span>Active Tiffin List</span>
+                <span style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--success);">
+                    <span class="active-dot"></span> Live
+                </span>
+            </h3>
+            <div class="orders-list" id="ordersList">
+                <div class="empty-state">No orders confirmed yet today.</div>
+            </div>
+        </div>
+
+        <!-- Controls for testing / manual entry -->
+        <div class="admin-controls">
+            <button class="btn btn-minus" onclick="adjustCount(-1)">− 1</button>
+            <button class="btn btn-refresh" onclick="fetchOrders()">🔄 Refresh</button>
+            <button class="btn btn-plus" onclick="adjustCount(1)">+ 1</button>
+        </div>
+    </div>
+
+    <script>
+        // Set date
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('hi-IN', options);
+
+        let tiffinCount = 0;
+        let confirmedOrders = [];
+
+        // Fetch orders from LocalStorage (or later directly from Google Sheets API)
+        function fetchOrders() {
+            const savedCount = localStorage.getItem('tiffinCount');
+            const savedOrders = localStorage.getItem('confirmedOrders');
+
+            if (savedCount !== null) {
+                tiffinCount = parseInt(savedCount);
+            }
+            if (savedOrders !== null) {
+                confirmedOrders = JSON.parse(savedOrders);
+            } else {
+                confirmedOrders = [];
+            }
+
+            updateUI();
+        }
+
+        function adjustCount(amount) {
+            tiffinCount = Math.max(0, tiffinCount + amount);
+            localStorage.setItem('tiffinCount', tiffinCount);
+            
+            // If adding manually, push a dummy guest row for Mummy to see
+            if (amount > 0) {
+                confirmedOrders.push({
+                    name: "Manual Entry " + tiffinCount,
+                    address: "Room Delivery",
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                });
+            } else if (amount < 0 && confirmedOrders.length > 0) {
+                confirmedOrders.pop();
+            }
+            
+            localStorage.setItem('confirmedOrders', JSON.stringify(confirmedOrders));
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('tiffinCount').textContent = tiffinCount;
+            const listContainer = document.getElementById('ordersList');
+
+            if (confirmedOrders.length === 0) {
+                listContainer.innerHTML = '<div class="empty-state">No orders confirmed yet today.</div>';
+            } else {
+                listContainer.innerHTML = confirmedOrders.map(order => `
+                    <div class="order-row">
+                        <div>
+                            <div class="customer-name">${order.name}</div>
+                            <div class="customer-address">${order.address}</div>
+                        </div>
+                        <div class="status-badge">YES (${order.time || '10:00 AM'})</div>
+                    </div>
+                `).reverse().join('');
+            }
+        }
+
+        // Initialize
+        fetchOrders();
+    </script>
+</body>
+</html>
