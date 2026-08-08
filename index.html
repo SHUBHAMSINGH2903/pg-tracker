@@ -272,7 +272,9 @@
         </div>
     </div>
 
-    <script>
+        // Google Apps Script API URL (Configurable)
+        let GOOGLE_SHEET_API = localStorage.getItem('googleSheetApiUrl') || "";
+
         // Set date
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('hi-IN', options);
@@ -280,8 +282,26 @@
         let tiffinCount = 0;
         let confirmedOrders = [];
 
-        // Fetch orders from LocalStorage (or later directly from Google Sheets API)
-        function fetchOrders() {
+        // Fetch orders from Google Sheets Webhook API (or fallback to LocalStorage)
+        async function fetchOrders() {
+            if (GOOGLE_SHEET_API) {
+                try {
+                    const response = await fetch(GOOGLE_SHEET_API);
+                    const data = await response.json();
+                    if (data && typeof data.count !== 'undefined') {
+                        tiffinCount = data.count;
+                        confirmedOrders = data.orders || [];
+                        localStorage.setItem('tiffinCount', tiffinCount);
+                        localStorage.setItem('confirmedOrders', JSON.stringify(confirmedOrders));
+                        updateUI();
+                        return;
+                    }
+                } catch (err) {
+                    console.log("Sheet Sync Fetch Error, using fallback:", err);
+                }
+            }
+
+            // Fallback to LocalStorage
             const savedCount = localStorage.getItem('tiffinCount');
             const savedOrders = localStorage.getItem('confirmedOrders');
 
@@ -297,15 +317,24 @@
             updateUI();
         }
 
+        function setSheetApiUrl() {
+            const url = prompt("Google Apps Script API URL प्रविष्ट करें (किशन / Auto-Sync के लिए):", GOOGLE_SHEET_API);
+            if (url !== null) {
+                GOOGLE_SHEET_API = url.trim();
+                localStorage.setItem('googleSheetApiUrl', GOOGLE_SHEET_API);
+                alert(GOOGLE_SHEET_API ? "✅ Google Sheet Auto-Sync कनेक्ट हो गया!" : "Auto-Sync बंद कर दिया गया है।");
+                fetchOrders();
+            }
+        }
+
         function adjustCount(amount) {
             tiffinCount = Math.max(0, tiffinCount + amount);
             localStorage.setItem('tiffinCount', tiffinCount);
             
-            // If adding manually, push a dummy guest row for Mummy to see
             if (amount > 0) {
                 confirmedOrders.push({
-                    name: "Manual Entry " + tiffinCount,
-                    address: "Room Delivery",
+                    name: "Manual Order " + tiffinCount,
+                    address: "PG Delivery",
                     time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
                 });
             } else if (amount < 0 && confirmedOrders.length > 0) {
@@ -329,14 +358,15 @@
                             <div class="customer-name">${order.name}</div>
                             <div class="customer-address">${order.address}</div>
                         </div>
-                        <div class="status-badge">YES (${order.time || '10:00 AM'})</div>
+                        <div class="status-badge">YES (${order.time || 'Confirmed'})</div>
                     </div>
                 `).reverse().join('');
             }
         }
 
-        // Initialize
+        // Initialize & Auto-poll every 5 seconds for instant live updates!
         fetchOrders();
+        setInterval(fetchOrders, 5000);
     </script>
 </body>
 </html>
